@@ -21,7 +21,7 @@ jobs:
     - task: Docker@2
       inputs:
         containerRegistry: 'DockerTest'
-        repository: 'my-python-app'
+        repository: 'anupkd/my-python-app'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: |
