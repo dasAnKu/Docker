@@ -19,10 +19,11 @@ jobs:
     - checkout: self
 
     - task: Docker@2
-      displayName: Build Docker Image
       inputs:
-        command: build
-        repository: my-python-app
+        containerRegistry: 'DockerTest'
+        repository: 'my-python-app'
+        command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: |
+          $(Build.BuildId)
           latest
