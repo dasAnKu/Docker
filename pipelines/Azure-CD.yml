@@ -2,8 +2,8 @@ trigger: none
 
 resources:
   pipelines:
-    - pipeline: ciPipeline
-      source: Azure-CI
+    - pipeline: CI
+      source: CI
       trigger: true
 
 pool:
