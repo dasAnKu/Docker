@@ -1,29 +1,34 @@
-trigger: none   # no CI trigger
+trigger: none
 
-schedules:
-  - cron: "0 22 * * *"
-    displayName: Daily 22:00 Build
-    branches:
-      include:
-        - main
-    always: true
+resources:
+  pipelines:
+    - pipeline: ciPipeline
+      source: Azure-CI
+      trigger: true
 
 pool:
   vmImage: 'ubuntu-latest'
 
-jobs:
-- job: BuildDocker
-  displayName: Build Docker Image
-  steps:
+variables:
+  imageName: anupkd/my-python-app
+  containerAppName: my-container-app
+  resourceGroup: my-resource-group
 
-    - checkout: self
+stages:
+- stage: Deploy
+  displayName: Deploy to Azure Container Apps
+  jobs:
+  - job: DeployJob
+    steps:
 
-    - task: Docker@2
+    - task: AzureCLI@2
+      displayName: Deploy to Container App
       inputs:
-        containerRegistry: 'DockerTest'
-        repository: 'anupkd/my-python-app'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
-        tags: |
-          $(Build.BuildId)
-          latest
+        azureSubscription: 'Ivoclar - Development - Subscription'   # <-- your Azure RM service connection
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az containerapp update \
+            --name $(containerAppName) \
+            --resource-group $(resourceGroup) \
+            --image docker.io/$(imageName):latest
