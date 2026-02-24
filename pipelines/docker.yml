@@ -1,21 +1,28 @@
-name: Docker Build
+trigger: none   # no CI trigger
 
-on:
-  push:
+schedules:
+  - cron: "0 22 * * *"
+    displayName: Daily 22:00 Build
     branches:
-      - main
-  pull_request:
+      include:
+        - main
+    always: true
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+- job: BuildDocker
+  displayName: Build Docker Image
+  steps:
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - checkout: self
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        run: docker build -t my-python-app .
+    - task: Docker@2
+      displayName: Build Docker Image
+      inputs:
+        command: build
+        repository: my-python-app
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          latest
