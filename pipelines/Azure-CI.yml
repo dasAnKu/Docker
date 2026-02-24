@@ -1,0 +1,34 @@
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: ciPipeline
+      source: CI-Pipeline-Name   # must match real CI pipeline name
+      trigger: true
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: anupkd/my-python-app
+  containerAppName: my-container-app
+  resourceGroup: my-resource-group
+
+stages:
+- stage: Deploy
+  displayName: Deploy to Azure Container Apps
+  jobs:
+  - job: DeployJob
+    steps:
+
+    - task: AzureCLI@2
+      displayName: Deploy to Container App
+      inputs:
+        azureSubscription: 'Ivoclar - Development - Subscription'   # <-- your Azure RM service connection
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az containerapp update \
+            --name $(containerAppName) \
+            --resource-group $(resourceGroup) \
+            --image docker.io/$(imageName):latest
